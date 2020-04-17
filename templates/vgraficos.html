@@ -1,0 +1,326 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="{{url_for('static', filename='plugins/code/highcharts.js')}}"></script>
+<script src="{{url_for('static', filename='plugins/code/modules/data.js')}}"></script>
+<section class="content">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Seleccione una fecha</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <div class="btn-group">
+                        </div>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="form-group">
+                    <label>Seleccione una fecha:</label>
+                    <div class="input-group">
+                        <div class="col-sm-4">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            </div>
+                            <input type="text" id="fecha1" class="form-control" data-inputmask-alias="datetime" data-inputmask-inputformat="yyyy-mm-dd" data-mask>
+                            <!--<input type="text" id="fecha1">-->
+                        </div>
+                    </div>
+                    <!-- /.input group -->
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" id="buscar">Buscar</button>
+                    <button class="btn btn-secondary" id="buscar" onclick="location.reload()">Limpiar</button>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- ./card-body -->
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Gráficos</h5>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <div class="btn-group">
+                        </div>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div id="container"></div>
+                            <script type="text/javascript">
+                                $('#buscar').click(function () {
+                                    document.getElementById('buscar').disabled = true;
+                                    ['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
+                                        document.getElementById('container').addEventListener(
+                                            eventType,
+                                            function (e) {
+                                                var chart,
+                                                    point,
+                                                    i,
+                                                    event;
+
+                                                for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                                                    chart = Highcharts.charts[i];
+                                                    // Find coordinates within the chart
+                                                    event = chart.pointer.normalize(e);
+                                                    // Get the hovered point
+                                                    point = chart.series[0].searchPoint(event, true);
+
+                                                    if (point) {
+                                                        point.highlight(e);
+                                                    }
+                                                }
+                                            }
+                                        );
+                                    });
+
+                                    /**
+                                     * Override the reset function, we don't need to hide the tooltips and
+                                     * crosshairs.
+                                     */
+                                    Highcharts.Pointer.prototype.reset = function () {
+                                        return undefined;
+                                    };
+
+                                    /**
+                                     * Highlight a point by showing tooltip, setting hover state and draw crosshair
+                                     */
+                                    Highcharts.Point.prototype.highlight = function (event) {
+                                        event = this.series.chart.pointer.normalize(event);
+                                        this.onMouseOver(); // Show the hover marker
+                                        this.series.chart.tooltip.refresh(this); // Show the tooltip
+                                        this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
+                                    };
+
+                                    /**
+                                     * Synchronize zooming through the setExtremes event handler.
+                                     */
+                                    function syncExtremes(e) {
+                                        var thisChart = this.chart;
+
+                                        if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
+                                            Highcharts.each(Highcharts.charts, function (chart) {
+                                                if (chart !== thisChart) {
+                                                    if (chart.xAxis[0].setExtremes) { // It is null while updating
+                                                        chart.xAxis[0].setExtremes(
+                                                            e.min,
+                                                            e.max,
+                                                            undefined,
+                                                            false,
+                                                            { trigger: 'syncExtremes' }
+                                                        );
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    // Get the data. The contents of the data file can be viewed at
+                                    Highcharts.ajax({
+                                        url: '/datosJSON/' + document.getElementById('fecha1').value,
+                                        dataType: 'text',
+                                        success: function (activity) {
+
+                                            activity = JSON.parse(activity);
+                                            activity.datasets.forEach(function (dataset, i) {
+
+                                                // Add X values
+                                                dataset.data = Highcharts.map(dataset.data, function (val, j) {
+                                                    return [activity.xData[j], val];
+                                                });
+
+                                                var chartDiv = document.createElement('div');
+                                                chartDiv.className = 'chart';
+                                                document.getElementById('container').appendChild(chartDiv);
+
+                                                Highcharts.chart(chartDiv, {
+                                                    chart: {
+                                                        marginLeft: 40, // Keep all charts left aligned
+                                                        spacingTop: 20,
+                                                        spacingBottom: 20
+                                                    },
+                                                    title: {
+                                                        text: dataset.name,
+                                                        align: 'left',
+                                                        margin: 0,
+                                                        x: 30
+                                                    },
+                                                    credits: {
+                                                        enabled: false
+                                                    },
+                                                    legend: {
+                                                        enabled: false
+                                                    },
+                                                    xAxis: {
+                                                        crosshair: true,
+                                                        events: {
+                                                            setExtremes: syncExtremes
+                                                        },
+                                                        labels: {
+                                                            format: '{value}'
+                                                        }
+                                                    },
+                                                    yAxis: {
+                                                        title: {
+                                                            text: null
+                                                        }
+                                                    },
+                                                    tooltip: {
+                                                        positioner: function () {
+                                                            return {
+                                                                // right aligned
+                                                                x: this.chart.chartWidth - this.label.width,
+                                                                y: 10 // align to title
+                                                            };
+                                                        },
+                                                        borderWidth: 0,
+                                                        backgroundColor: 'none',
+                                                        pointFormat: '{point.y}',
+                                                        headerFormat: '',
+                                                        shadow: false,
+                                                        style: {
+                                                            fontSize: '18px'
+                                                        },
+                                                    },
+                                                    series: [{
+                                                        data: dataset.data,
+                                                        name: dataset.name,
+                                                        type: dataset.type,
+                                                        color: Highcharts.getOptions().colors[i],
+                                                        fillOpacity: 0.3,
+                                                        tooltip: {
+                                                            valueSuffix: ' ' + dataset.unit
+                                                        }
+                                                    }]
+                                                });
+                                            });
+                                        }
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- ./card-body -->
+    </div>
+</section>
+<!-- /.content -->
+
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{{url_for('static', filename='plugins/jquery/jquery.min.js')}}"></script>
+<!-- Bootstrap 4 -->
+<script src="{{url_for('static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<!-- Select2 -->
+<script src="{{url_for('static', filename='plugins/select2/js/select2.full.min.js')}}"></script>
+<!-- Bootstrap4 Duallistbox -->
+<script
+    src="{{url_for('static', filename='plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js')}}"></script>
+<!-- InputMask -->
+<script src="{{url_for('static', filename='plugins/moment/moment.min.js')}}"></script>
+<script src="{{url_for('static', filename='plugins/inputmask/min/jquery.inputmask.bundle.min.js')}}"></script>
+<!-- date-range-picker -->
+<script src="{{url_for('static', filename='plugins/daterangepicker/daterangepicker.js')}}"></script>
+<!-- bootstrap color picker -->
+<script src="{{url_for('static', filename='plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js')}}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script
+    src="{{url_for('static', filename='plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
+<!-- Bootstrap Switch -->
+<script src="{{url_for('static', filename='plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
+<!-- AdminLTE App -->
+<script src="{{url_for('static', filename='dist/js/adminlte.min.js')}}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{url_for('static', filename='dist/js/demo.js')}}"></script>
+<!-- Page script -->
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
+
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        })
+
+        //Datemask dd/mm/yyyy
+        $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+        //Datemask2 mm/dd/yyyy
+        $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+        //Money Euro
+        $('[data-mask]').inputmask()
+
+        //Date range picker
+        $('#reservation').daterangepicker()
+        //Date range picker with time picker
+        $('#reservationtime').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 30,
+            locale: {
+                format: 'MM/DD/YYYY hh:mm A'
+            }
+        })
+        //Date range as a button
+        $('#daterange-btn').daterangepicker(
+            {
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
+            },
+            function (start, end) {
+                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+            }
+        )
+
+        //Timepicker
+        $('#timepicker').datetimepicker({
+            format: 'LT'
+        })
+
+        //Bootstrap Duallistbox
+        $('.duallistbox').bootstrapDualListbox()
+
+        //Colorpicker
+        $('.my-colorpicker1').colorpicker()
+        //color picker with addon
+        $('.my-colorpicker2').colorpicker()
+
+        $('.my-colorpicker2').on('colorpickerChange', function (event) {
+            $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+        });
+
+        $("input[data-bootstrap-switch]").each(function () {
+            $(this).bootstrapSwitch('state', $(this).prop('checked'));
+        });
+
+    })
+</script>
+{% endblock %}

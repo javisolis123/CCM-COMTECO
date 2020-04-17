@@ -1,0 +1,256 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- right column -->
+            <div class="col-md-6">
+                <!-- general form elements disabled -->
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Seleccionar los datos</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form action="/ChangeConfig" method="POST" role="form">
+                        <div class="col-sm-4">
+                            <!-- select -->
+                            <div class="form-group">
+                                <label>Seleccione la marca de la antena</label>
+                                <select class="form-control" name="antena">
+                                    <option value="1">DragonWave</option>
+                                    <option value="2">Siemens</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <!-- select -->
+                            <div class="form-group">
+                                <label>Seleccione la frecuencia de muestreo</label>
+                                <select class="form-control" name="frecuencia">
+                                    <option value="2">2 Minutos</option>
+                                    <option value="10">10 Minutos</option>
+                                    <option value="20">20 Minutos</option>
+                                    <option value="30">30 Minutos</option>
+                                    <option value="60">60 Minutos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label>Potencia Maxima Permitida</label>
+                            <input type="text" name="potmax" class="form-control"
+                                placeholder="Potencia maxima aceptada">
+                        </div>
+                        <div class="col-4">
+                            <label>Potencia Minima Permitida</label>
+                            <input type="text" name="potmin" class="form-control"
+                                placeholder="Potencia minima aceptada">
+                        </div>
+                        <div class="col-4">
+                            <label>Temperatura Maxima Gabinete</label>
+                            <input type="text" name="tempmax" class="form-control"
+                                placeholder="Maxima Permitida">
+                        </div>
+                        <div class="col-4">
+                            <label>Temperatura Minima Gabinete</label>
+                            <input type="text" name="tempmin" class="form-control"
+                                placeholder="Minima Permitida">
+                        </div>
+                        <div class="card-body">
+                            <input type="checkbox" checked data-bootstrap-switch id="chec" onchange="comprobar(this)" name="check"> Conexión con CCM
+                        </div>
+                        <div class="col-4">
+                            <label>IP o host de la CCM:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="ip" data-inputmask="'alias': 'ip'" data-mask id="ip">
+                            </div>
+                            <!-- /.input group -->
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- /.card -->
+            </div>
+            
+            <!--/.col (right) -->
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- right column -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Configuración Actual del Sistema</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body p-0">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">#</th>
+                                    <th>Marca de la Antena</th>
+                                    <th>Frecuencia de Muestreo</th>
+                                    <th>Potencia Maxima</th>
+                                    <th>Potencia Minima</th>
+                                    <th>Temperatura Maxima</th>
+                                    <th>Temperatura Minima</th>
+                                    <th>Estado del CheckBox</th>
+                                    <th>Ip del CCM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ data.id }}</td>
+                                    {% if data.tipo == 1 %}
+                                    <td>DragonWave</td>
+                                    {% endif %}
+                                    {% if data.tipo == 2 %}
+                                    <td>Siemens</td>
+                                    {% endif %}
+                                    <td>{{ data.frec }} Minutos</td>
+                                    <td>{{ data.potmax }} [V]</td>
+                                    <td>{{ data.potmin }} [V]</td>
+                                    <td>{{ data.tempmax }} °C</td>
+                                    <td>{{ data.tempmin }} °C</td>
+                                    <td>{{ data.checkbox }}</td>
+                                    <td>{{ data.ip }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!--/.col (right) -->
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+
+
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{{url_for('static', filename='plugins/jquery/jquery.min.js')}}"></script>
+<!-- Bootstrap 4 -->
+<script src="{{url_for('static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<!-- Select2 -->
+<script src="{{url_for('static', filename='plugins/select2/js/select2.full.min.js')}}"></script>
+<!-- Bootstrap4 Duallistbox -->
+<script
+    src="{{url_for('static', filename='plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js')}}"></script>
+<!-- InputMask -->
+<script src="{{url_for('static', filename='plugins/moment/moment.min.js')}}"></script>
+<script src="{{url_for('static', filename='plugins/inputmask/min/jquery.inputmask.bundle.min.js')}}"></script>
+<!-- date-range-picker -->
+<script src="{{url_for('static', filename='plugins/daterangepicker/daterangepicker.js')}}"></script>
+<!-- bootstrap color picker -->
+<script src="{{url_for('static', filename='plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js')}}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script
+    src="{{url_for('static', filename='plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
+<!-- Bootstrap Switch -->
+<script src="{{url_for('static', filename='plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
+<!-- AdminLTE App -->
+<script src="{{url_for('static', filename='dist/js/adminlte.min.js')}}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{url_for('static', filename='dist/js/demo.js')}}"></script>
+<!-- Page script -->
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
+
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        })
+
+        //Datemask dd/mm/yyyy
+        $('#datemask').inputmask('yyyy/mm/dd', { 'placeholder': 'yyyy/mm/dd' })
+        //Datemask2 mm/dd/yyyy
+        $('#datemask2').inputmask('yyyy/mm/dd', { 'placeholder': 'yyyy/mm/dd' })
+        //Money Euro
+        $('[data-mask]').inputmask()
+
+        //Date range picker
+        $('#reservation').daterangepicker()
+        //Date range picker with time picker
+        $('#reservationtime').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 30,
+            locale: {
+                format: 'YYYY/MM/DD hh:mm A'
+            }
+        })
+        //Date range as a button
+        $('#daterange-btn').daterangepicker(
+            {
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
+            },
+            function (start, end) {
+                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+            }
+        )
+
+        //Timepicker
+        $('#timepicker').datetimepicker({
+            format: 'yyyy/mm/dd'
+        })
+
+        //Bootstrap Duallistbox
+        $('.duallistbox').bootstrapDualListbox()
+
+        //Colorpicker
+        $('.my-colorpicker1').colorpicker()
+        //color picker with addon
+        $('.my-colorpicker2').colorpicker()
+
+        $('.my-colorpicker2').on('colorpickerChange', function (event) {
+            $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+        });
+
+        $("input[data-bootstrap-switch]").each(function () {
+            $(this).bootstrapSwitch('state', $(this).prop('checked'));
+        });
+
+    })
+</script>
+<script>
+    function comprobar(obj) {
+        if (obj.checked) {
+
+            document.getElementById('ip').style.display = "";
+        } else {
+
+            document.getElementById('ip').style.display = "none";
+        }
+    }
+</script>
+
+
+{% endblock %}
