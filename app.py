@@ -15,8 +15,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/tu
 #Configuracion del objeto mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'javier.solis.guardia1@gmail.com'
-app.config['MAIL_PASSWORD'] = '******'
+app.config['MAIL_USERNAME'] = 'something@server.com'  #Cambiar por algun usuario valido
+app.config['MAIL_PASSWORD'] = '******'                  #Cambiar por el password correcto
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 
