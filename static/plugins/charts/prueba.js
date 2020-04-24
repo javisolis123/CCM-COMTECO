@@ -1,156 +1,110 @@
-var chartTemperatue;
-var chartHumidity;
+Highcharts.chart('container', {
 
-        function requestData() {
-            // Ajax call to get the Data from Flask
-            var requests = $.get('/datos');
+    chart: {
+        type: 'gauge',
+        plotBackgroundColor: null,
+        plotBackgroundImage: null,
+        plotBorderWidth: 0,
+        plotShadow: false
+    },
 
-            var tm = requests.done(function (result) {
-                // Temperature
-                var seriesTemperature = chartTemperatue.series[0],
-                    shiftTemperature = seriesTemperature.data.length > 20;
+    title: {
+        text: 'Speedometer'
+    },
 
-                // Humidity
-                var seriesHumidity = chartHumidity.series[0],
-                    shiftHumidity = seriesTemperature.data.length > 20;
+    pane: {
+        startAngle: -150,
+        endAngle: 150,
+        background: [{
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#FFF'],
+                    [1, '#333']
+                ]
+            },
+            borderWidth: 0,
+            outerRadius: '109%'
+        }, {
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#333'],
+                    [1, '#FFF']
+                ]
+            },
+            borderWidth: 1,
+            outerRadius: '107%'
+        }, {
+            // default background
+        }, {
+            backgroundColor: '#DDD',
+            borderWidth: 0,
+            outerRadius: '105%',
+            innerRadius: '103%'
+        }]
+    },
 
-                // Add the Point
-                // Time Temperature\
-                var data1 = [];
-                data1.push(result[0]);
-                data1.push(result[3]);
+    // the value axis
+    yAxis: {
+        min: 0,
+        max: 200,
 
+        minorTickInterval: 'auto',
+        minorTickWidth: 1,
+        minorTickLength: 10,
+        minorTickPosition: 'inside',
+        minorTickColor: '#666',
 
-                // Add the Point
-                // Time Humidity
-                var data2 = [];
-                data2.push(result[0]);
-                data2.push(result[4]);
+        tickPixelInterval: 30,
+        tickWidth: 2,
+        tickPosition: 'inside',
+        tickLength: 10,
+        tickColor: '#666',
+        labels: {
+            step: 2,
+            rotation: 'auto'
+        },
+        title: {
+            text: 'km/h'
+        },
+        plotBands: [{
+            from: 0,
+            to: 120,
+            color: '#55BF3B' // green
+        }, {
+            from: 120,
+            to: 160,
+            color: '#DDDF0D' // yellow
+        }, {
+            from: 160,
+            to: 200,
+            color: '#DF5353' // red
+        }]
+    },
 
-
-                chartTemperatue.series[0].addPoint(data1, true, shiftTemperature);
-                chartHumidity.series[0].addPoint(data2, true, shiftHumidity);
-
-                //Cuadro 1x1
-                $(".TRtemperatura").text("");
-                $(".TRtemperatura").text("Temperatura: " + result[1] + "°C");
-                $(".TRhumedad").text("");
-                $(".TRhumedad").text("Humedad: " + result[2] + "%");
-
-                //Cuadro 1x2
-                $(".TRch1").text("");
-                $(".TRch1").text("Actual: " + result[3] + " [V]");
-                $(".TRch1max").text("");
-                $(".TRch1max").text("Máxima: " + result[9] + " [V]");
-                $(".TRch1min").text("");
-                $(".TRch1min").text("Mínima: " + result[10] + " [V]");
-
-                //Cuadro 1x3
-                $(".TRch2").text("");
-                $(".TRch2").text("Actual: " + result[4] + " [V]");
-                $(".TRch2max").text("");
-                $(".TRch2max").text("Máxima: " + result[11] + " [V]");
-                $(".TRch2min").text("");
-                $(".TRch2min").text("Mínima: " + result[12] + " [V]");
-
-                //Cuadro 2x1
-                $(".PromTemp").text("");
-                $(".PromTemp").text("Temperatura: " + result[15] + "°C");
-                $(".PromHum").text("");
-                $(".PromHum").text("Humedad: " + result[16] + "%");
-
-                //Cuadro 2x2
-                $(".Tmaxima").text("");
-                $(".Tmaxima").text("Temperatura Máxima: " + result[7] + "°C");
-                $(".Tminima").text("");
-                $(".Tminima").text("Temperatura Mínima: " + result[8] + "°C");
-                $(".Hmaxima").text("");
-                $(".Hmaxima").text("Humedad Máxima: " + result[13] + "%");
-                $(".Hminima").text("");
-                $(".Hminima").text("Humedad Mínima: " + result[14] + "%");
-
-                //Cuadro 1x3
-                $(".TempGabinete").text("");
-                $(".TempGabinete").text("Temperatura: " + result[4] + " [V]");
-                $(".voltajeDC").text("");
-                $(".voltajeDC").text("Voltaje DC: " + result[5] + " [VDC]");
-                $(".voltajeAC").text("");
-                $(".voltajeAC").text("Voltaje AC: " + result[6] + " [VAC]");
-                
-                // call it again after one second
-                setTimeout(requestData, 5000);
-            });
+    series: [{
+        name: 'Speed',
+        data: [0],
+        tooltip: {
+            valueSuffix: ' km/h'
         }
+    }]
 
-        $(document).ready(function () {
-            // --------------Chart 1 ----------------------------
-            chartTemperatue = new Highcharts.Chart({
-                chart:
-                {
-                    renderTo: 'data-temperature',
-                    defaultSeriesType: 'area',
-                    events: {
-                        load: requestData
-                    }
-                },
-                title:
-                {
-                    text: 'Potencia de Recepcion Principal'
-                },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150,
-                    maxZoom: 20 * 1000
-                },
-                yAxis: {
-                    minPadding: 0.2,
-                    maxPadding: 0.2,
-                    title: {
-                        text: 'Voltaje',
-                        margin: 80
-                    }
-                },
-                series: [{
-                    color: '#c23d23',
-                    lineColor: '#303030',
-                    name: 'Potencia Recibida',
-                    data: []
-                }]
-            });
-            // --------------Chart 1 Ends - -----------------
+},
+// Add some life
+function (chart) {
+    if (!chart.renderer.forExport) {
+        setInterval(function () {
+            var point = chart.series[0].points[0],
+                newVal,
+                inc = 50;
 
-            chartHumidity = new Highcharts.Chart({
-                chart:
-                {
-                    renderTo: 'data-humidity',
-                    defaultSeriesType: 'area',
-                    events: {
-                        load: requestData
-                    }
-                },
-                title:
-                {
-                    text: 'Potencia de Recepcion Secundaria'
-                },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150,
-                    maxZoom: 20 * 1000
-                },
-                yAxis: {
-                    minPadding: 0.2,
-                    maxPadding: 0.2,
-                    title: {
-                        text: 'Voltaje',
-                        margin: 80
-                    }
-                },
-                series: [{
-                    lineColor: '#1d82b8',
-                    name: 'Potencia Recibida',
-                    data: []
-                }]
-            });
+            newVal = point.y + inc;
+            
 
+            point.update(newVal);
 
-        });
+        }, 3000);
+    }
+});

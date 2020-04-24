@@ -10,12 +10,7 @@
                 <div class="info-box">
                     <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
 
-                    <div class="info-box-content">
-                        <span class="info-box-text">TEMPERATURA Y HUMEDAD ACTUAL</span>
-                        <br>
-                        <h6 class="TRtemperatura"></h6>
-                        <h6 class="TRhumedad"></h6>
-                    </div>
+                    <div id="container" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto"></div>
                     <!-- /.info-box-content -->
                 </div>
                 <!-- /.info-box -->
@@ -142,7 +137,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div id="data-humidity"></div>
-                                <script src="{{url_for('static', filename='plugins/charts/prueba.js')}}"></script>
+                                
                                 <!-- /.chart-responsive -->
                             </div>
                         </div>
@@ -214,7 +209,6 @@
 <!-- ./wrapper -->
 
 <!-- OPTIONAL SCRIPTS -->
-<script src="dist/js/demo.js"></script>
 
 <!-- PAGE PLUGINS -->
 <!-- jQuery Mapael -->

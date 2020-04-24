@@ -35,9 +35,10 @@
     <!-- JQuery links  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- DataTables -->
-    <link rel="stylesheet" href="{{url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.css')}}">
+    <link rel="stylesheet"
+        href="{{url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.css')}}">
     <!-- summernote -->
-  <link rel="stylesheet" href="{{url_for('static', filename='plugins/summernote/summernote-bs4.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='plugins/summernote/summernote-bs4.css')}}">
 
     <style type="text/css">
         .chart {
@@ -47,13 +48,18 @@
             margin: 0 auto;
         }
     </style>
+    <!--HIGHCHART GAUGE-->
+    
+    <script src="{{url_for('static', filename='plugins/code/highcharts.js')}}"></script>
+    
+    <script src="{{url_for('static', filename='plugins/code/highcharts-more.js')}}"></script>
+    
+    <script src="{{url_for('static', filename='plugins/code/modules/exporting.js')}}"></script>
+    
+    <script src="{{url_for('static', filename='plugins/code/modules/export-data.js')}}"></script>
 </head>
 
 <body class="hold-transition sidebar-mini">
-    <script src="{{url_for('static', filename='plugins/code/highcharts.js')}}"></script>
-    <script src="{{url_for('static', filename='plugins/code/modules/exporting.js')}}"></script>
-    <script src="http://code.highcharts.com/highcharts-more.js"></script>
-    <script src="{{url_for('static', filename='plugins/code/modules/export-data.js')}}"></script>
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Navbar -->
@@ -165,7 +171,7 @@
 
             {% block body %}
             {% endblock %}
-
+            <script src="{{url_for('static', filename='plugins/charts/prueba.js')}}"></script>
 </body>
 
 </html>
