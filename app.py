@@ -11,7 +11,7 @@ import json
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Frida123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/tuti'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://javi:javiersolis12@localhost:3306/tuti'
 
 #Configuracion del objeto mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
