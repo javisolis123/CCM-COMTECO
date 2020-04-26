@@ -56,6 +56,16 @@ class ahora(UserMixin, db.Model):
     canal4 = db.Column(db.Float())
     tempGabinete = db.Column(db.Float())
     hora = db.Column(db.Time())
+
+class alarmas(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    codigo = db.Column(db.String(10))
+    descripcion = db.Column(db.String(200))
+    hora_inicial = db.Column(db.Time())
+    fec_inicial = db.Column(db.Date())
+    estado = db.Column(db.String(10))
+    estado_email = db.Column(db.String(20))
+
     
 
 @login_manager.user_loader
@@ -82,13 +92,18 @@ def index():
 @app.route('/datos', methods=["GET", "POST"])
 def data1():
     datos = ahora.query.first()
+    Alarmas = alarmas.query.filter_by(estado='activo').all()
+    contador = 0
+    for alarma in Alarmas:
+        contador += 1
     data = [datos.temperatura,
             datos.humedad,
             datos.canal1,
             datos.canal2,
             datos.canal3,
             datos.canal4,
-            datos.tempGabinete]
+            datos.tempGabinete,
+            contador]
     response = make_response(json.dumps(data))
     response.content_type = 'application/json'
     return response
