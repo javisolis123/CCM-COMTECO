@@ -124,7 +124,7 @@ def login():
         return render_template('login.html')
 
 @app.route('/RegAdmin', methods=['GET', 'POST'])
-
+def login():
 def Registrar_Administradores():
     form = RegisterForm()
     if request.method == 'POST' and form.validate_on_submit():
